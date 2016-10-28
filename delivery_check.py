@@ -121,7 +121,7 @@ def email_delivery_contacts(logistics_file, send_emails=False):
             record['Service Report To Country'] + \
             email_part_3 + signature
 
-        if "UNKNOWN" not in record['Delivery Contact eMail'].upper() and email_text.lower() not in emails:
+        if email_text.lower() not in emails:
             ws.append([cell.value for cell in row])
             emails.add(email_text.lower())
             if debug_it:
@@ -133,7 +133,7 @@ def email_delivery_contacts(logistics_file, send_emails=False):
                 email_addresses[record["Delivery Contact eMail"].lower()] = 0
             email_addresses[record["Delivery Contact eMail"].lower()] += 1
 
-            if send_emails:
+            if "UNKNOWN" not in record['Delivery Contact eMail'].upper() and send_emails:
                 msg_box_text = "Emails sent to " + record["Delivery Contact eMail"].lower() + ": " + str(email_addresses[record["Delivery Contact eMail"].lower()]) + \
                     '\n\n' + "Emails sent for site " + record['Installed At Site Name'] + ": " + str(sites[record['Installed At Site Name']]) + '\n\n' + \
                     email_text
@@ -144,8 +144,6 @@ def email_delivery_contacts(logistics_file, send_emails=False):
                 elif my_response is None:
                     print("Emails aborted.", file=sys.stderr)
                     send_emails = False
-        elif "UNKNOWN" in record['Delivery Contact eMail'].upper():
-            ws.append([cell.value for cell in row])
 
     save_file_name = logistics_file.replace('.xlsx', '_scrubed.xlsx')
 
