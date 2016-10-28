@@ -35,7 +35,7 @@ class DeliveryCheckGui(tkinter.Tk):
                                        command=self.on_select_button_click)
         self.select_button.grid(column=0, row=0, sticky='NW', padx=10, pady=10)
 
-        self.generate_button = ttk.Button(self, text="Send eMails",
+        self.generate_button = ttk.Button(self, text="Check",
                                        command=self.on_generate_button_click)
         self.generate_button.grid(column=1, row=0, sticky='NE', padx=10, pady=10)
 
@@ -43,7 +43,7 @@ class DeliveryCheckGui(tkinter.Tk):
         self.text_box.grid(column=0, row=2, columnspan=2, sticky='NSWE', padx=5, pady=5)
         sys.stderr = StdoutRedirector(self.text_box)
         self.active_thread = None
-        # self.include_flash = tkinter.IntVar()
+        self.send_emails = tkinter.IntVar()
         # self.new_asups = tkinter.IntVar()
 
         self.initialize()
@@ -60,7 +60,7 @@ class DeliveryCheckGui(tkinter.Tk):
 
         label.grid(column=0, row=1, columnspan=2, sticky='EW', padx=10, pady=10)
         self.logistics_file_label_var.set("Please select eBI Logistics report")
-        # ttk.Checkbutton(self, text="Include Flash Tab", variable=self.include_flash).grid(row=3, sticky='W')
+        ttk.Checkbutton(self, text="Send emails", variable=self.send_emails).grid(row=3, sticky='W')
         # ttk.Checkbutton(self, text="Get New Asups", variable=self.new_asups).grid(row=4, sticky='W')
 
         self.generate_button['state'] = 'disabled'
@@ -89,8 +89,12 @@ class DeliveryCheckGui(tkinter.Tk):
             # self.select_button['state'] = 'disabled'
             # ib_report = ib.IbDetails()
             print("Working...", file=sys.stderr)
+            if self.send_emails.get():
+                send_emails = True
+            else:
+                send_emails = False
 
-            self.active_thread = threading.Thread(target=delivery_check.email_delivery_contacts, args=[self.logistics_file])
+            self.active_thread = threading.Thread(target=delivery_check.email_delivery_contacts, args=[self.logistics_file, send_emails])
             self.active_thread.start()
             # time.sleep(1)
             # os.system("start " + os.path.join(self.directory, "thisisatest.txt"))
